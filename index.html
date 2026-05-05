@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>母亲节快乐 Happy Mother's Day</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --cream: #FFF8F0;
+  --pink: #F2A7B3;
+  --pink-light: #FDDEE2;
+  --pink-dark: #D4788A;
+  --green: #2D5A3D;
+  --green-light: #A8C5B2;
+  --gold: #D4A843;
+  --brown: #8B6F47;
+  --red: #D94F5C;
+}
+
+body {
+  font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  background: var(--cream);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+.slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  pointer-events: none;
+  overflow-y: auto;
+  padding: 40px 20px;
+}
+
+.slide.active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: all;
+}
+
+.nav-bar {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(10px);
+  padding: 6px 14px;
+  border-radius: 50px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.nav-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--pink);
+  background: white;
+  color: var(--pink-dark);
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-btn:hover { background: var(--pink); color: white; }
+
+.page-dots { display: flex; align-items: center; gap: 8px; padding: 0 10px; }
+
+.page-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--pink-light);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.page-dot.active { background: var(--pink-dark); transform: scale(1.3); }
+
+.settings-btn {
+  position: fixed;
+  top: 16px; right: 16px;
+  z-index: 1001;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--pink);
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(10px);
+  font-size: 22px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-btn:hover { background: var(--pink); }
+
+.settings-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-overlay.show { display: flex; }
+
+.settings-panel {
+  background: white;
+  border-radius: 24px;
+  padding: 30px;
+  max-width: 600px;
+  width: 92%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+.settings-close {
+  position: absolute;
+  top: 12px; right: 16px;
+  background: none; border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--brown);
+  transition: color 0.3s;
+}
+
+.settings-close:hover { color: var(--red); }
+
+.settings-title { font-size: clamp(22px, 3vw, 28px); color: var(--green); font-weight: 900; margin-bottom: 20px; text-align: center; }
+.settings-desc { font-size: 14px; color: var(--brown); text-align: center; margin-bottom: 20px; line-height: 1.6; }
+
+.prize-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+
+.prize-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-radius: 14px;
+  border: 2px solid var(--pink-light);
+  transition: border-color 0.3s;
+}
+
+.prize-item:focus-within { border-color: var(--pink); }
+
+.prize-item .prize-idx {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--pink);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; flex-shrink: 0;
+}
+
+.prize-item input {
+  flex: 1; border: none; background: transparent;
+  font-size: 15px; font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  color: var(--brown); outline: none; min-width: 0;
+}
+
+.prize-item input::placeholder { color: #ccc; }
+
+.prize-item .del-btn { background: none; border: none; font-size: 18px; cursor: pointer; color: #ccc; transition: color 0.3s; flex-shrink: 0; }
+.prize-item .del-btn:hover { color: var(--red); }
+
+.settings-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+.settings-btn-action {
+  padding: 10px 24px; border: none; border-radius: 30px;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  transition: all 0.3s; font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+}
+
+.settings-btn-action.green { background: linear-gradient(135deg, var(--green), var(--green-light)); color: white; }
+.settings-btn-action.green:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(45,90,61,0.3); }
+.settings-btn-action.pink { background: linear-gradient(135deg, var(--pink), var(--pink-dark)); color: white; }
+.settings-btn-action.pink:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(210,120,138,0.3); }
+.settings-btn-action.gold { background: linear-gradient(135deg, var(--gold), #E8C060); color: white; }
+.settings-btn-action.gold:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(212,168,67,0.3); }
+
+.settings-tabs { display: flex; gap: 6px; margin-bottom: 20px; }
+.settings-tab {
+  flex: 1; padding: 10px 8px; border: 2px solid var(--pink-light); border-radius: 14px;
+  background: transparent; color: var(--brown); font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: all 0.3s; font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+}
+.settings-tab.active { background: var(--pink); color: white; border-color: var(--pink); }
+
+.settings-section { display: none; }
+.settings-section.active { display: block; }
+
+.icon-upload-zone {
+  display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;
+}
+.icon-preview {
+  width: 64px; height: 64px; border-radius: 14px;
+  border: 2px solid var(--pink-light); overflow: hidden;
+  position: relative; background: var(--cream);
+  display: flex; align-items: center; justify-content: center;
+}
+.icon-preview img { width: 100%; height: 100%; object-fit: cover; }
+.icon-preview .icon-del {
+  position: absolute; top: -6px; right: -6px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--red); color: white; border: none;
+  font-size: 12px; cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.2s;
+}
+.icon-preview:hover .icon-del { opacity: 1; }
+
+.icon-upload-btn {
+  width: 64px; height: 64px; border-radius: 14px;
+  border: 2px dashed var(--pink-light); background: transparent;
+  color: var(--pink-dark); font-size: 28px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s;
+}
+.icon-upload-btn:hover { border-color: var(--pink); background: var(--cream); }
+
+.icon-hint { font-size: 13px; color: var(--brown); text-align: center; margin-bottom: 14px; line-height: 1.5; opacity: 0.7; }
+
+.cover-preview-box {
+  width: 100%; max-width: 360px; margin: 0 auto 12px;
+  border-radius: 16px; overflow: hidden;
+  border: 2px solid var(--pink-light);
+  position: relative;
+}
+.cover-preview-box img { width: 100%; display: block; }
+.cover-preview-box .cover-del {
+  position: absolute; top: 8px; right: 8px;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--red); color: white; border: none;
+  font-size: 16px; cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.add-prize-btn {
+  width: 100%; padding: 10px;
+  border: 2px dashed var(--pink-light); border-radius: 14px;
+  background: transparent; color: var(--pink-dark);
+  font-size: 15px; cursor: pointer;
+  transition: all 0.3s; font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+}
+
+.add-prize-btn:hover { border-color: var(--pink); background: var(--cream); }
+
+.float-flower {
+  position: absolute; font-size: 28px;
+  animation: floatAnim 6s ease-in-out infinite;
+  opacity: 0.6; pointer-events: none;
+  max-width: 48px; max-height: 48px;
+}
+
+@keyframes floatAnim {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(10deg); }
+}
+
+/* 封面 */
+.cover-slide {
+  background: url('slide1.png') center center / cover no-repeat;
+  text-align: center;
+  position: relative;
+  justify-content: center;
+  padding-top: 50vh;
+}
+
+.cover-slide > * { position: relative; z-index: 1; }
+
+.cover-happy {
+  font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  font-weight: 900;
+  font-size: clamp(64px, 10vw, 120px);
+  color: var(--pink-dark);
+  text-shadow: 0 0 20px rgba(255,255,255,0.9), 2px 2px 0 rgba(255,255,255,0.6);
+  margin-bottom: 8px;
+}
+
+.cover-subtitle {
+  font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  font-size: clamp(36px, 5vw, 56px);
+  color: var(--brown);
+  font-weight: 700;
+  margin-top: 8px;
+  letter-spacing: 4px;
+  text-shadow: 0 0 15px rgba(255,255,255,0.9), 2px 2px 0 rgba(255,255,255,0.6);
+}
+
+.cover-date {
+  font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  font-size: 16px;
+  color: var(--green);
+  margin-top: 15px;
+  letter-spacing: 6px;
+  text-shadow: 0 0 10px rgba(255,255,255,0.8);
+}
+
+.cover-hearts { position: absolute; width: 100%; height: 100%; pointer-events: none; top: 0; left: 0; }
+
+.heart { position: absolute; color: var(--pink); animation: heartFloat 8s ease-in-out infinite; opacity: 0.4; }
+
+@keyframes heartFloat {
+  0% { transform: translateY(0) scale(1); opacity: 0.4; }
+  50% { transform: translateY(-30px) scale(1.1); opacity: 0.7; }
+  100% { transform: translateY(0) scale(1); opacity: 0.4; }
+}
+
+/* 活动简介 */
+.intro-slide { background: var(--cream); }
+
+.intro-card {
+  background: white;
+  border-radius: 30px;
+  padding: clamp(30px, 5vw, 60px);
+  max-width: 800px; width: 90%;
+  box-shadow: 0 10px 40px rgba(139, 111, 71, 0.1);
+  text-align: center;
+  border: 3px solid var(--pink-light);
+  position: relative;
+}
+
+.intro-card::before { content: '💐'; position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 40px; }
+.intro-title { font-size: clamp(28px, 4vw, 42px); color: var(--green); font-weight: 900; margin-bottom: 20px; }
+.intro-text { font-size: clamp(16px, 2vw, 20px); color: var(--brown); line-height: 1.8; margin-bottom: 15px; }
+.intro-highlight { background: linear-gradient(120deg, var(--pink-light) 0%, var(--pink-light) 100%); background-size: 100% 40%; background-repeat: no-repeat; background-position: 0 85%; font-weight: 700; color: var(--green); }
+
+/* 记忆翻牌 */
+.memory-slide { background: linear-gradient(180deg, #FFF8F0 0%, #FDE8E8 100%); }
+.game-container { max-width: 900px; width: 95%; text-align: center; padding-bottom: 60px; }
+.game-title { font-size: clamp(24px, 4vw, 40px); color: var(--green); font-weight: 900; margin-bottom: 8px; }
+.game-subtitle { font-size: clamp(14px, 1.8vw, 18px); color: var(--brown); margin-bottom: 20px; }
+
+.memory-board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  max-width: 420px;
+  margin: 0 auto 20px;
+}
+
+.memory-card {
+  aspect-ratio: 1;
+  border-radius: 16px;
+  border: 3px solid var(--pink-light);
+  background: white;
+  cursor: pointer;
+  transition: all 0.4s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(28px, 5vw, 42px);
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.memory-card::before { content: '❓'; font-size: clamp(24px, 4vw, 36px); transition: all 0.3s; }
+.memory-card:hover { border-color: var(--pink); transform: scale(1.05); }
+.memory-card.flipped { border-color: var(--green); background: linear-gradient(135deg, #E8F5E9, #F0FFF0); }
+.memory-card.flipped::before { display: none; }
+.memory-card.matched { border-color: var(--gold); background: linear-gradient(135deg, #FFF9E6, #FFF0CC); cursor: default; animation: matchPop 0.5s ease; }
+.memory-card.matched::before { display: none; }
+
+@keyframes matchPop { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+
+.card-emoji { display: none; font-size: clamp(28px, 5vw, 42px); }
+.memory-card.flipped .card-emoji, .memory-card.matched .card-emoji { display: block; }
+
+.memory-stats { display: flex; justify-content: center; gap: 30px; margin-bottom: 15px; flex-wrap: wrap; }
+.stat-item { font-size: 18px; color: var(--brown); }
+.stat-item span { font-weight: 900; color: var(--green); font-size: 24px; }
+
+.next-btn {
+  padding: 10px 28px; border: none; border-radius: 30px;
+  background: linear-gradient(135deg, var(--green), var(--green-light));
+  color: white; font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: all 0.3s;
+  font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif; margin-top: 10px;
+}
+
+.next-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(45, 90, 61, 0.3); }
+
+#memory-complete { display: none; margin-top: 15px; }
+#memory-complete .complete-title { font-size: clamp(22px, 3vw, 30px); color: var(--green); font-weight: 900; }
+#memory-complete .complete-msg { font-size: 16px; color: var(--brown); margin-top: 8px; line-height: 1.6; }
+
+/* 抽奖 */
+.lottery-slide { background: linear-gradient(135deg, #FFF8F0 0%, #FDE8E8 50%, #FFF0E6 100%); }
+.lottery-container { text-align: center; max-width: 700px; width: 95%; padding-bottom: 60px; }
+.lottery-title { font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif; font-weight: 900; font-size: clamp(32px, 5vw, 52px); color: var(--green); margin-bottom: 8px; }
+.lottery-subtitle { font-size: clamp(14px, 2vw, 18px); color: var(--brown); margin-bottom: 25px; }
+
+.lottery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  max-width: 480px;
+  margin: 0 auto 25px;
+}
+
+.lottery-card {
+  aspect-ratio: 1;
+  border-radius: 20px;
+  border: 3px solid var(--pink-light);
+  background: white;
+  cursor: pointer;
+  transition: all 0.4s;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px;
+  position: relative; overflow: hidden;
+}
+
+.lottery-card::before { content: '❓'; font-size: clamp(32px, 5vw, 48px); transition: all 0.4s; }
+.lottery-card:hover { border-color: var(--pink); transform: translateY(-4px); box-shadow: 0 8px 25px rgba(210, 120, 138, 0.3); }
+.lottery-card.revealed { border-color: var(--gold); background: linear-gradient(135deg, #FFF9E6, #FFF0CC); }
+.lottery-card.revealed::before { display: none; }
+.lottery-prize { display: none; flex-direction: column; align-items: center; gap: 6px; }
+.lottery-card.revealed .lottery-prize { display: flex; }
+.prize-icon { font-size: clamp(32px, 5vw, 48px); }
+.prize-text { font-size: clamp(11px, 1.5vw, 14px); color: var(--green); font-weight: 700; text-align: center; line-height: 1.2; }
+
+.lottery-btn {
+  padding: 10px 32px; border: none; border-radius: 50px;
+  background: linear-gradient(135deg, var(--gold), #E8C060);
+  color: white; font-size: clamp(15px, 2vw, 18px); font-weight: 700;
+  cursor: pointer; transition: all 0.3s;
+  font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  box-shadow: 0 4px 15px rgba(212, 168, 67, 0.4);
+}
+
+.lottery-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(212, 168, 67, 0.5); }
+.lottery-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+
+.lottery-result {
+  margin-top: 20px; padding: 16px 24px;
+  background: white; border-radius: 16px;
+  border: 2px solid var(--gold);
+  display: none;
+  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.lottery-result.show { display: block; }
+
+@keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.result-text { font-size: clamp(20px, 3vw, 28px); color: var(--green); font-weight: 900; }
+.result-desc { font-size: 14px; color: var(--brown); margin-top: 5px; }
+
+/* 结尾 */
+.ending-slide { background: linear-gradient(135deg, var(--cream), var(--pink-light)); text-align: center; }
+.ending-msg { font-size: clamp(28px, 5vw, 52px); color: var(--green); font-weight: 900; margin-bottom: 20px; line-height: 1.4; }
+.ending-poem { font-size: clamp(16px, 2vw, 22px); color: var(--brown); line-height: 2; font-style: italic; max-width: 500px; }
+.ending-icon { font-size: 80px; margin: 20px 0; animation: gentleBounce 3s ease-in-out infinite; }
+@keyframes gentleBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+.confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; overflow: hidden; }
+.confetti-piece { position: absolute; width: 10px; height: 10px; top: -20px; animation: confettiFall 3s linear forwards; }
+@keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+
+@media (max-width: 600px) {
+  .lottery-grid { gap: 8px; }
+  .nav-bar { padding: 5px 10px; gap: 6px; }
+  .nav-btn { width: 32px; height: 32px; font-size: 13px; }
+  .memory-board { gap: 6px; max-width: 340px; }
+  .settings-panel { padding: 20px; }
+  .memory-stats { gap: 15px; }
+}
+</style>
+</head>
+<body>
+
+<button class="settings-btn" onclick="openSettings()" title="设置">⚙️</button>
+
+<div class="settings-overlay" id="settings-overlay">
+  <div class="settings-panel">
+    <button class="settings-close" onclick="closeSettings()">×</button>
+    <div class="settings-tabs">
+      <button class="settings-tab active" onclick="switchSettingsTab('prize')">🎁 抽奖奖品</button>
+      <button class="settings-tab" onclick="switchSettingsTab('icons')">🌸 漂浮图标</button>
+      <button class="settings-tab" onclick="switchSettingsTab('cover')">🖼️ 封面图片</button>
+    </div>
+
+    <!-- 奖品设置 -->
+    <div class="settings-section active" id="section-prize">
+      <div class="settings-desc">修改下方内容即可自定义抽奖奖品，每行一个奖品，格式为「图标 名称」<br>例如：🌹 康乃馨花束</div>
+      <div class="prize-list" id="prize-list"></div>
+      <button class="add-prize-btn" onclick="addPrizeRow()">＋ 添加奖品</button>
+      <div class="settings-actions" style="margin-top:16px;">
+        <button class="settings-btn-action green" onclick="saveSettings()">💾 保存并应用</button>
+        <button class="settings-btn-action gold" onclick="resetSettings()">🔄 恢复默认</button>
+        <button class="settings-btn-action pink" onclick="closeSettings()">取消</button>
+      </div>
+    </div>
+
+    <!-- 漂浮图标设置 -->
+    <div class="settings-section" id="section-icons">
+      <div class="icon-hint">上传本地图片替换每页的漂浮装饰图标<br>支持 JPG / PNG / GIF / WebP，建议尺寸 64×64 以上<br>未上传图片时使用默认 Emoji 装饰</div>
+      <div class="icon-upload-zone" id="icon-upload-zone"></div>
+      <input type="file" id="icon-file-input" accept="image/*" multiple style="display:none;" onchange="handleIconUpload(event)">
+      <button class="icon-upload-btn" onclick="document.getElementById('icon-file-input').click()">＋</button>
+      <div class="settings-actions" style="margin-top:16px;">
+        <button class="settings-btn-action green" onclick="saveIconSettings()">💾 保存并应用</button>
+        <button class="settings-btn-action gold" onclick="resetIconSettings()">🔄 恢复默认Emoji</button>
+        <button class="settings-btn-action pink" onclick="closeSettings()">取消</button>
+      </div>
+    </div>
+
+    <!-- 封面图片设置 -->
+    <div class="settings-section" id="section-cover">
+      <div class="icon-hint">上传本地图片作为首页封面背景<br>支持 JPG / PNG / WebP，建议横屏比例（如 16:9）<br>未上传时使用默认背景</div>
+      <div id="cover-preview-area" style="text-align:center;margin-bottom:16px;"></div>
+      <input type="file" id="cover-file-input" accept="image/*" style="display:none;" onchange="handleCoverUpload(event)">
+      <div style="text-align:center;">
+        <button class="settings-btn-action pink" onclick="document.getElementById('cover-file-input').click()">📁 选择封面图片</button>
+      </div>
+      <div class="settings-actions" style="margin-top:16px;">
+        <button class="settings-btn-action green" onclick="saveCoverSettings()">💾 保存并应用</button>
+        <button class="settings-btn-action gold" onclick="resetCoverSettings()">🔄 恢复默认</button>
+        <button class="settings-btn-action pink" onclick="closeSettings()">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 封面 -->
+<div class="slide cover-slide active" id="slide-0">
+  <div class="cover-hearts">
+    <span class="heart" style="left:10%;top:15%;font-size:24px;animation-delay:0s">❤️</span>
+    <span class="heart" style="left:85%;top:20%;font-size:18px;animation-delay:1s">💕</span>
+    <span class="heart" style="left:5%;top:70%;font-size:20px;animation-delay:2s">💗</span>
+    <span class="heart" style="left:90%;top:65%;font-size:22px;animation-delay:0.5s">💖</span>
+    <span class="heart" style="left:20%;top:85%;font-size:16px;animation-delay:1.5s">❤️</span>
+    <span class="heart" style="left:75%;top:80%;font-size:20px;animation-delay:2.5s">💕</span>
+    <span class="heart" style="left:50%;top:10%;font-size:14px;animation-delay:3s">💗</span>
+  </div>
+  <div class="cover-happy">母亲节快乐</div>
+  <div class="cover-subtitle">💐 致最爱的她 💐</div>
+  <div class="cover-date">2026 · 母亲节特别活动</div>
+</div>
+
+<!-- 活动简介 -->
+<div class="slide intro-slide" id="slide-1">
+  <div class="intro-card">
+    <div class="intro-title">🌸 活动简介 🌸</div>
+    <div class="intro-text">在这个特别的日子里，让我们一起向<span class="intro-highlight">最伟大的妈妈</span>表达爱意！</div>
+    <div class="intro-text">今天我们准备了有趣的<span class="intro-highlight">记忆翻牌游戏</span>和惊喜<span class="intro-highlight">抽奖环节</span>，让每一位妈妈都能感受到满满的爱与感恩。</div>
+    <div class="intro-text" style="font-size:clamp(20px,3vw,28px); margin-top:20px;">
+      🎮 游戏：记忆翻牌<br>
+      🎁 惊喜：幸运大抽奖
+    </div>
+    <div style="margin-top:20px; font-size:40px;">🌹🍰🎀</div>
+  </div>
+</div>
+
+<!-- 记忆翻牌 -->
+<div class="slide memory-slide" id="slide-2">
+  <div class="game-container">
+    <div class="game-title">🎮 记忆翻牌</div>
+    <div class="game-subtitle">翻开两张牌，找到相同的图案！考验你和妈妈的默契时刻 💕</div>
+    <div class="memory-board" id="memory-board"></div>
+    <div class="memory-stats">
+      <div class="stat-item">翻牌次数：<span id="flip-count">0</span></div>
+      <div class="stat-item">用时：<span id="timer">00:00</span></div>
+      <div class="stat-item">已配对：<span id="match-count">0</span> / <span id="total-pairs">8</span></div>
+    </div>
+    <button class="next-btn" onclick="initMemory()">🔄 重新开始</button>
+    <div id="memory-complete">
+      <div style="font-size:60px; margin:10px 0;">🎉</div>
+      <div class="complete-title">全部配对成功！太棒了！</div>
+      <div class="complete-msg" id="memory-msg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 幸运大抽奖 -->
+<div class="slide lottery-slide" id="slide-3">
+  <div class="lottery-container">
+    <div class="lottery-title">🎁 幸运大抽奖</div>
+    <div class="lottery-subtitle">选一张卡片，看看你的幸运奖品！每位小朋友限抽一次哦~</div>
+    <div class="lottery-grid" id="lottery-grid"></div>
+    <button class="lottery-btn" id="lottery-btn" onclick="startLottery()">✨ 开始抽奖 ✨</button>
+    <div class="lottery-result" id="lottery-result">
+      <div class="result-text" id="result-text"></div>
+      <div class="result-desc" id="result-desc"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 结尾 -->
+<div class="slide ending-slide" id="slide-4">
+  <div class="ending-icon">💐</div>
+  <div class="ending-msg">妈妈，您辛苦了！</div>
+  <div class="ending-poem">
+    谁言寸草心，报得三春晖。<br>
+    感谢您无私的爱与付出，<br>
+    愿天下所有妈妈——健康、快乐、幸福！<br><br>
+    🌸 母亲节快乐 🌸
+  </div>
+  <div style="margin-top:30px; font-size:50px;">👩‍👧‍👦💕🌹</div>
+</div>
+
+<div class="nav-bar">
+  <button class="nav-btn" onclick="prevSlide()">◀</button>
+  <div class="page-dots" id="page-dots"></div>
+  <button class="nav-btn" onclick="nextSlide()">▶</button>
+</div>
+
+<div class="confetti-container" id="confetti"></div>
+
+<script>
+// 默认奖品
+const defaultPrizes = [
+  { icon: '🌹', name: '康乃馨花束' },
+  { icon: '🍰', name: '甜蜜蛋糕' },
+  { icon: '🧸', name: '可爱玩偶' },
+  { icon: '📖', name: '绘本故事' },
+  { icon: '🎨', name: '绘画套装' },
+  { icon: '💝', name: '爱心贺卡' },
+  { icon: '🎵', name: '音乐盒' },
+  { icon: '🌟', name: '幸运之星' },
+  { icon: '👑', name: '最佳妈妈奖' }
+];
+
+function loadPrizes() {
+  const saved = localStorage.getItem('mothersday_prizes');
+  if (saved) { try { return JSON.parse(saved); } catch(e) {} }
+  return JSON.parse(JSON.stringify(defaultPrizes));
+}
+function savePrizesToStorage(p) { localStorage.setItem('mothersday_prizes', JSON.stringify(p)); }
+let prizes = loadPrizes();
+
+// 设置面板
+function switchSettingsTab(tab) {
+  document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
+  if (tab === 'prize') {
+    document.querySelectorAll('.settings-tab')[0].classList.add('active');
+    document.getElementById('section-prize').classList.add('active');
+  } else if (tab === 'icons') {
+    document.querySelectorAll('.settings-tab')[1].classList.add('active');
+    document.getElementById('section-icons').classList.add('active');
+    renderIconPreviews();
+  } else {
+    document.querySelectorAll('.settings-tab')[2].classList.add('active');
+    document.getElementById('section-cover').classList.add('active');
+    renderCoverPreview();
+  }
+}
+
+function openSettings() {
+  const list = document.getElementById('prize-list');
+  list.innerHTML = '';
+  prizes.forEach((p) => addPrizeRowUI(p.icon, p.name));
+  renderIconPreviews();
+  document.getElementById('settings-overlay').classList.add('show');
+}
+function closeSettings() { document.getElementById('settings-overlay').classList.remove('show'); }
+
+function addPrizeRowUI(icon, name) {
+  const list = document.getElementById('prize-list');
+  const idx = list.children.length + 1;
+  const item = document.createElement('div');
+  item.className = 'prize-item';
+  item.innerHTML = '<span class="prize-idx">' + idx + '</span>'
+    + '<input type="text" class="prize-icon-input" placeholder="图标" value="' + icon + '" maxlength="4" style="width:50px;flex:none;text-align:center;font-size:20px;">'
+    + '<input type="text" class="prize-name-input" placeholder="奖品名称" value="' + name + '">'
+    + '<button class="del-btn" onclick="this.parentElement.remove();renumberPrizes()">×</button>';
+  list.appendChild(item);
+}
+function addPrizeRow() { addPrizeRowUI('', ''); }
+function renumberPrizes() { document.querySelectorAll('#prize-list .prize-idx').forEach((el, i) => { el.textContent = i + 1; }); }
+
+function saveSettings() {
+  const items = document.querySelectorAll('#prize-list .prize-item');
+  const newPrizes = [];
+  items.forEach(item => {
+    const icon = item.querySelector('.prize-icon-input').value.trim();
+    const name = item.querySelector('.prize-name-input').value.trim();
+    if (icon || name) newPrizes.push({ icon: icon || '🎁', name: name || '神秘奖品' });
+  });
+  if (newPrizes.length === 0) { alert('至少需要一个奖品！'); return; }
+  prizes = newPrizes;
+  savePrizesToStorage(prizes);
+  initLottery();
+  closeSettings();
+}
+
+function resetSettings() {
+  if (confirm('确定恢复默认奖品？')) {
+    prizes = JSON.parse(JSON.stringify(defaultPrizes));
+    savePrizesToStorage(prizes);
+    initLottery();
+    openSettings();
+  }
+}
+
+// 翻页导航
+const totalSlides = 5;
+let currentSlide = 0;
+
+function initDots() {
+  const dots = document.getElementById('page-dots');
+  dots.innerHTML = '';
+  for (let i = 0; i < totalSlides; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'page-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goToSlide(i);
+    dots.appendChild(dot);
+  }
+}
+function goToSlide(n) {
+  document.getElementById('slide-' + currentSlide).classList.remove('active');
+  document.querySelectorAll('.page-dot')[currentSlide].classList.remove('active');
+  currentSlide = n;
+  document.getElementById('slide-' + currentSlide).classList.add('active');
+  document.querySelectorAll('.page-dot')[currentSlide].classList.add('active');
+}
+function nextSlide() { if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1); }
+function prevSlide() { if (currentSlide > 0) goToSlide(currentSlide - 1); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+  if (e.key === 'ArrowLeft') prevSlide();
+});
+initDots();
+
+// 浮动图标管理
+function loadCustomIcons() {
+  const saved = localStorage.getItem('mothersday_icons');
+  if (saved) { try { return JSON.parse(saved); } catch(e) {} }
+  return [];
+}
+function saveCustomIconsToStorage(icons) { localStorage.setItem('mothersday_icons', JSON.stringify(icons)); }
+let customIcons = loadCustomIcons();
+
+function renderIconPreviews() {
+  const zone = document.getElementById('icon-upload-zone');
+  zone.innerHTML = '';
+  customIcons.forEach((src, i) => {
+    const div = document.createElement('div');
+    div.className = 'icon-preview';
+    div.innerHTML = '<img src="' + src + '" alt="icon-' + i + '">'
+      + '<button class="icon-del" onclick="removeCustomIcon(' + i + ')">×</button>';
+    zone.appendChild(div);
+  });
+}
+
+function handleIconUpload(event) {
+  const files = event.target.files;
+  if (!files.length) return;
+  Array.from(files).forEach(file => {
+    if (customIcons.length >= 20) { alert('最多支持20个自定义图标'); return; }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      customIcons.push(e.target.result);
+      renderIconPreviews();
+    };
+    reader.readAsDataURL(file);
+  });
+  event.target.value = '';
+}
+
+function removeCustomIcon(idx) {
+  customIcons.splice(idx, 1);
+  renderIconPreviews();
+}
+
+function saveIconSettings() {
+  saveCustomIconsToStorage(customIcons);
+  rebuildFloatingFlowers();
+  closeSettings();
+}
+
+function resetIconSettings() {
+  if (confirm('确定恢复默认Emoji装饰？将清除所有自定义图片。')) {
+    customIcons = [];
+    saveCustomIconsToStorage(customIcons);
+    rebuildFloatingFlowers();
+    renderIconPreviews();
+  }
+}
+
+// 封面图片管理
+let pendingCoverImage = null;
+
+function loadCoverImage() {
+  const saved = localStorage.getItem('mothersday_cover');
+  if (saved) return saved;
+  return '';
+}
+
+function renderCoverPreview() {
+  const area = document.getElementById('cover-preview-area');
+  const current = pendingCoverImage || loadCoverImage();
+  if (current) {
+    area.innerHTML = '<div class="cover-preview-box">'
+      + '<img src="' + current + '" alt="封面预览">'
+      + '<button class="cover-del" onclick="removeCoverImage()">×</button>'
+      + '</div>';
+  } else {
+    area.innerHTML = '<div style="padding:20px;color:var(--brown);opacity:0.5;font-size:14px;">当前使用默认背景</div>';
+  }
+}
+
+function handleCoverUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    pendingCoverImage = e.target.result;
+    renderCoverPreview();
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function removeCoverImage() {
+  pendingCoverImage = '';
+  renderCoverPreview();
+}
+
+function saveCoverSettings() {
+  if (pendingCoverImage) {
+    localStorage.setItem('mothersday_cover', pendingCoverImage);
+  } else if (pendingCoverImage === '') {
+    localStorage.removeItem('mothersday_cover');
+  }
+  applyCoverImage();
+  pendingCoverImage = null;
+  closeSettings();
+}
+
+function resetCoverSettings() {
+  if (confirm('确定恢复默认封面背景？')) {
+    localStorage.removeItem('mothersday_cover');
+    pendingCoverImage = null;
+    applyCoverImage();
+    renderCoverPreview();
+  }
+}
+
+function applyCoverImage() {
+  const cover = loadCoverImage();
+  const slide = document.querySelector('.cover-slide');
+  if (cover) {
+    slide.style.backgroundImage = 'url(' + cover + ')';
+  } else {
+    slide.style.backgroundImage = "url('slide1.png')";
+  }
+}
+
+applyCoverImage();
+
+// 浮动花朵
+const defaultFlowers = ['🌸','🌺','🌷','🌻','🌹','💮','🏵️'];
+
+function addFloatingFlowers() {
+  const useCustom = customIcons.length > 0;
+  document.querySelectorAll('.slide').forEach(slide => {
+    slide.querySelectorAll('.float-flower').forEach(f => f.remove());
+    for (let i = 0; i < 6; i++) {
+      if (useCustom) {
+        const f = document.createElement('img');
+        f.className = 'float-flower';
+        f.src = customIcons[Math.floor(Math.random() * customIcons.length)];
+        f.style.left = Math.random() * 90 + 5 + '%';
+        f.style.top = Math.random() * 90 + 5 + '%';
+        f.style.animationDelay = Math.random() * 4 + 's';
+        f.style.width = (24 + Math.random() * 20) + 'px';
+        f.style.height = 'auto';
+        f.style.objectFit = 'contain';
+        slide.appendChild(f);
+      } else {
+        const f = document.createElement('span');
+        f.className = 'float-flower';
+        f.textContent = defaultFlowers[Math.floor(Math.random() * defaultFlowers.length)];
+        f.style.left = Math.random() * 90 + 5 + '%';
+        f.style.top = Math.random() * 90 + 5 + '%';
+        f.style.animationDelay = Math.random() * 4 + 's';
+        f.style.fontSize = (18 + Math.random() * 20) + 'px';
+        slide.appendChild(f);
+      }
+    }
+  });
+}
+
+function rebuildFloatingFlowers() {
+  document.querySelectorAll('.slide .float-flower').forEach(f => f.remove());
+  addFloatingFlowers();
+}
+
+addFloatingFlowers();
+
+// 记忆翻牌
+const memoryEmojis = ['🌹','🌸','💝','🎀','🧸','🍰','🎵','👑'];
+let memoryCards = [];
+let flippedCards = [];
+let matchedPairs = 0;
+let flipCount = 0;
+let lockBoard = false;
+let timerInterval = null;
+let timerSeconds = 0;
+let gameStarted = false;
+
+function startTimer() {
+  if (gameStarted) return;
+  gameStarted = true;
+  timerSeconds = 0;
+  document.getElementById('timer').textContent = '00:00';
+  timerInterval = setInterval(() => {
+    timerSeconds++;
+    const m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+    const s = String(timerSeconds % 60).padStart(2, '0');
+    document.getElementById('timer').textContent = m + ':' + s;
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+}
+
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  if (m > 0) return m + '分' + s + '秒';
+  return s + '秒';
+}
+
+function initMemory() {
+  const pairs = [...memoryEmojis, ...memoryEmojis];
+  memoryCards = pairs.sort(() => Math.random() - 0.5);
+  flippedCards = [];
+  matchedPairs = 0;
+  flipCount = 0;
+  lockBoard = false;
+  gameStarted = false;
+  stopTimer();
+  timerSeconds = 0;
+  document.getElementById('flip-count').textContent = '0';
+  document.getElementById('timer').textContent = '00:00';
+  document.getElementById('match-count').textContent = '0';
+  document.getElementById('total-pairs').textContent = memoryEmojis.length;
+  document.getElementById('memory-complete').style.display = 'none';
+
+  const board = document.getElementById('memory-board');
+  board.innerHTML = '';
+  memoryCards.forEach((emoji, i) => {
+    const card = document.createElement('div');
+    card.className = 'memory-card';
+    card.dataset.index = i;
+    card.dataset.emoji = emoji;
+    card.innerHTML = '<span class="card-emoji">' + emoji + '</span>';
+    card.onclick = () => flipCard(card);
+    board.appendChild(card);
+  });
+}
+
+function flipCard(card) {
+  if (lockBoard) return;
+  if (card.classList.contains('flipped')) return;
+  if (card.classList.contains('matched')) return;
+  if (flippedCards.length >= 2) return;
+
+  startTimer();
+  card.classList.add('flipped');
+  flippedCards.push(card);
+  flipCount++;
+  document.getElementById('flip-count').textContent = flipCount;
+
+  if (flippedCards.length === 2) {
+    lockBoard = true;
+    const [card1, card2] = flippedCards;
+
+    if (card1.dataset.emoji === card2.dataset.emoji) {
+      setTimeout(() => {
+        card1.classList.remove('flipped');
+        card1.classList.add('matched');
+        card2.classList.remove('flipped');
+        card2.classList.add('matched');
+        matchedPairs++;
+        document.getElementById('match-count').textContent = matchedPairs;
+        flippedCards = [];
+        lockBoard = false;
+
+        if (matchedPairs === memoryEmojis.length) {
+          stopTimer();
+          setTimeout(() => {
+            document.getElementById('memory-complete').style.display = 'block';
+            const msg = document.getElementById('memory-msg');
+            const timeStr = formatTime(timerSeconds);
+            if (flipCount <= memoryEmojis.length * 2) {
+              msg.textContent = '🌟 仅用' + flipCount + '次翻牌、' + timeStr + '完成！记忆大师就是你！';
+            } else if (flipCount <= memoryEmojis.length * 3) {
+              msg.textContent = '👏 ' + flipCount + '次翻牌、' + timeStr + '完成，记忆力真棒！';
+            } else {
+              msg.textContent = '💪 ' + flipCount + '次翻牌、' + timeStr + '完成，坚持就是胜利！';
+            }
+            launchConfetti();
+          }, 300);
+        }
+      }, 300);
+    } else {
+      setTimeout(() => {
+        card1.classList.remove('flipped');
+        card2.classList.remove('flipped');
+        flippedCards = [];
+        lockBoard = false;
+      }, 800);
+    }
+  }
+}
+
+initMemory();
+
+// 抽奖
+let lotteryRevealed = new Set();
+
+function initLottery() {
+  lotteryRevealed = new Set();
+  const grid = document.getElementById('lottery-grid');
+  grid.innerHTML = '';
+  prizes.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'lottery-card';
+    card.id = 'lottery-' + i;
+    card.innerHTML = '<div class="lottery-prize"><span class="prize-icon">' + p.icon + '</span><span class="prize-text">' + p.name + '</span></div>';
+    card.onclick = () => revealCard(i);
+    grid.appendChild(card);
+  });
+  document.getElementById('lottery-btn').disabled = false;
+  document.getElementById('lottery-btn').textContent = '✨ 开始抽奖 ✨';
+  document.getElementById('lottery-result').style.display = 'none';
+}
+
+function revealCard(idx) {
+  if (lotteryRevealed.has(idx)) return;
+  lotteryRevealed.add(idx);
+  document.getElementById('lottery-' + idx).classList.add('revealed');
+  const prize = prizes[idx];
+  document.getElementById('result-text').textContent = prize.icon + ' ' + prize.name;
+  document.getElementById('result-desc').textContent = prize.desc || '';
+  const result = document.getElementById('lottery-result');
+  result.classList.add('show'); result.style.display = 'block';
+  if (idx === prizes.length - 1) { launchConfetti(); setTimeout(launchConfetti, 500); setTimeout(launchConfetti, 1000); }
+  if (lotteryRevealed.size >= 3) { document.getElementById('lottery-btn').disabled = true; document.getElementById('lottery-btn').textContent = '已抽完 🎉'; }
+}
+
+function startLottery() {
+  const unrevealed = [];
+  for (let i = 0; i < prizes.length; i++) if (!lotteryRevealed.has(i)) unrevealed.push(i);
+  if (unrevealed.length === 0) return;
+  revealCard(unrevealed[Math.floor(Math.random() * unrevealed.length)]);
+}
+initLottery();
+
+// 彩花
+function launchConfetti() {
+  const container = document.getElementById('confetti');
+  const colors = ['#F2A7B3','#D94F5C','#D4A843','#2D5A3D','#7BA7C2','#FF69B4','#FFD700'];
+  for (let i = 0; i < 60; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDelay = Math.random() * 1.5 + 's';
+    piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+    piece.style.width = (6 + Math.random() * 8) + 'px';
+    piece.style.height = (6 + Math.random() * 8) + 'px';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    container.appendChild(piece);
+    setTimeout(() => piece.remove(), 4000);
+  }
+}
+
+// 触摸滑动
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', e => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) { if (diff > 0) nextSlide(); else prevSlide(); }
+});
+</script>
+</body>
+</html>
